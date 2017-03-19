@@ -8,10 +8,13 @@ package readfile;
 import Models.Content_Object;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -36,68 +39,63 @@ public class ReadFile {
         StringBuffer stringBuffer = new StringBuffer();
         String line = "";
         List<Content_Object> list = new ArrayList<>();
-        List<Integer> lstyear = new ArrayList<>();
-        List<Integer> lstappearcount = new ArrayList<>();
-        List<Integer> lstbookcount = new ArrayList<>();
+//        List<Integer> lstyear = new ArrayList<>();
+//        List<Integer> lstappearcount = new ArrayList<>();
+//        List<Integer> lstbookcount = new ArrayList<>();
         Content_Object obj = new Content_Object();
 
         while ((line = bufferedReader.readLine()) != null) {
 
-            if (!line.equals("")) {
+            if (!line.trim().equals("")) {
                 String[] str = line.split("\t");
-                String s = str[0];
+                String content = str[0];
                 // kiểm tra lượng số có nhiều quá trong chuôi hay k
-                boolean isTrue = IsNumberic(s);
+                boolean isTrue = filterByNumberic(content);
                 // KIỂM TRA KÝ TỰ ĐẶC BIỆT CÓ NHIỀU QUÁ TRONG CHUỖI HAY KHÔNG
 //                boolean isTrueSpecialC = checkHavingSpecialC(s);
-                if (s.length() < 5) {
-                    System.out.println("nho hon 5");
-                } 
-                else if (isTrue) {
-                    System.out.println("nho hon 5");
-                } //                else if (isTrueSpecialC){
-                //                    System.out.println("nho hon 5");
-                //                }
-                else {
-                    String ss = str[1];
-                    int inss = Integer.parseInt(ss);
-                    lstyear.add(inss);
+                if (content.length() < 5) {
+//                    System.out.println("nho hon 5");
+                } else if (!isTrue) {
+                    //valid lines
+                    int year = Integer.parseInt(str[1]);
 
-                    String sss = str[2];
-                    int insss = Integer.parseInt(sss);
-                    lstappearcount.add(insss);
+                    int appear = Integer.parseInt(str[2]);
 
-                    String ssss = str[3];
-                    int inssss = Integer.parseInt(ssss);
-                    lstbookcount.add(inssss);
+                    int book = Integer.parseInt(str[3]);
 
-                    // thêm đối tượng vào List
-                    if (obj.getContent().equals(s)) {
-
+                    if (obj.getContent().equals(content)) {
+                        list.get(list.size() - 1).getYear().add(year);
+                        list.get(list.size() - 1).getAppearCount().add(appear);
+                        list.get(list.size() - 1).getBookCount().add(book);
                     } else {
                         obj = new Content_Object();
-                        lstyear = new ArrayList<>();
-                        lstappearcount = new ArrayList<>();
-                        lstbookcount = new ArrayList<>();
-                        obj.setContent(s);
-                        obj.setYear(lstyear);
-                        obj.setAppearCount(lstappearcount);
-                        obj.setBookCount(lstbookcount);
+                        obj.setContent(content);
+                        obj.getYear().add(year);
+                        obj.getAppearCount().add(appear);
+                        obj.getBookCount().add(book);
                         list.add(obj);
+                        System.out.println(list.size());
                     }
                 }
+            } else {
+                // line empty
+                System.err.println("Empty line");
             }
-
         }
+        System.err.println("Done analysis!!!!");
 
         bufferedReader.close();
 
         // ghi file
-        WriteFile(FILE, list);
+//        WriteFile(FILE, list);
+//System.err.println("Write result file");
+//        for (Content_Object content_Object : list) {
+//            ReadFile.outFile(FILE, content_Object.toString());
+//        }
     }
 
     // tính % số trong chuỗi
-    private static boolean IsNumberic(String str) {
+    private static boolean filterByNumberic(String str) {
         boolean isTrue = false;
         double lengofstr = str.length();
         String string = str.replaceAll("[^-?0-9]+", "");
@@ -222,4 +220,25 @@ public class ReadFile {
         }
     }
 
+    public static void outFile(String fileName, String text) {
+		
+		File file = new File(fileName);
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+				BufferedWriter bw = new BufferedWriter(
+						new OutputStreamWriter(new FileOutputStream(fileName, true), "UTF-8"));
+				bw.write(text + "\r\n");
+				bw.close();
+			} else {
+				BufferedWriter bw = new BufferedWriter(
+						new OutputStreamWriter(new FileOutputStream(fileName, true), "UTF-8"));
+				bw.write(text + "\r\n");
+				bw.close();
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
 }

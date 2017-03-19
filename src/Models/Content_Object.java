@@ -5,6 +5,7 @@
  */
 package Models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,10 +13,17 @@ import java.util.List;
  * @author Viegrid-04
  */
 public class Content_Object {
-    private  String content = "";
-    private  List<Integer> year = null;
-    private  List<Integer> appearCount = null;
-    private  List<Integer> bookCount = null;
+
+    private String content = "";
+    private List<Integer> year = null;
+    private List<Integer> appearCount = null;
+    private List<Integer> bookCount = null;
+
+    public Content_Object() {
+        year = new ArrayList<>();
+        appearCount = new ArrayList<>();
+        bookCount = new ArrayList<>();
+    }
 
     public String getContent() {
         return content;
@@ -49,6 +57,19 @@ public class Content_Object {
         this.bookCount = bookCount;
     }
 
-    
-    
+    @Override
+    public String toString() {
+
+        double freq = 0;//appearance times per book
+        int appearTotal = 0;
+        int bookTotal = 0;
+        for (int i = 0; i < getBookCount().size(); i++) {
+            bookTotal += getBookCount().get(i);
+            appearTotal += getAppearCount().get(i);
+        }
+        freq = appearTotal / bookTotal;
+
+        return content + "=" + freq;
+    }
+
 }
