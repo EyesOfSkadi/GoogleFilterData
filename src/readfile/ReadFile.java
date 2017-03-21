@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ReadFile {
 
-    private static String FILE = "filedulieu.txt";
+    private static String FILE = "googlebooks-eng-all-2gram-20120701-a_";
 
     /**
      * @param args the command line arguments
@@ -38,12 +38,12 @@ public class ReadFile {
         BufferedReader bufferedReader = new BufferedReader(new FileReader("googlebooks-eng-all-2gram-20120701-a_"));
         StringBuffer stringBuffer = new StringBuffer();
         String line = "";
-        List<Content_Object> list = new ArrayList<>();
+//        List<Content_Object> list = new ArrayList<>();
 //        List<Integer> lstyear = new ArrayList<>();
 //        List<Integer> lstappearcount = new ArrayList<>();
 //        List<Integer> lstbookcount = new ArrayList<>();
         Content_Object obj = new Content_Object();
-
+int count = 0;
         while ((line = bufferedReader.readLine()) != null) {
 
             if (!line.trim().equals("")) {
@@ -64,17 +64,23 @@ public class ReadFile {
                     int book = Integer.parseInt(str[3]);
 
                     if (obj.getContent().equals(content)) {
-                        list.get(list.size() - 1).getYear().add(year);
-                        list.get(list.size() - 1).getAppearCount().add(appear);
-                        list.get(list.size() - 1).getBookCount().add(book);
+                        obj.getYear().add(year);
+                        obj.getAppearCount().add(appear);
+                        obj.getBookCount().add(book);
                     } else {
+                        if(obj.getContent().trim().length()>1){
+                            count++;
+                            System.out.println(count);
+                            ReadFile.outFile(FILE+".txt", obj.toString());
+                        }
                         obj = new Content_Object();
                         obj.setContent(content);
                         obj.getYear().add(year);
                         obj.getAppearCount().add(appear);
                         obj.getBookCount().add(book);
-                        list.add(obj);
-                        System.out.println(list.size());
+//                        list.add(obj);
+//                        System.out.println(list.size());
+                        
                     }
                 }
             } else {
